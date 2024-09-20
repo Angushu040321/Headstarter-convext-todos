@@ -2,6 +2,7 @@
 
 import { todo } from "node:test";
 import { use, useState } from "react";
+import { NewTodoForm } from "./_components/new-todo-form";
 
 
 type ToDoItem = {
@@ -15,49 +16,74 @@ export default function Home() {
   const[todos, setTodos] = useState<ToDoItem[]>([
     {title:"example", description : "this is an example", completed :false}
   ]);
+  
   const[title,setTitle] = useState("");
   const[description, setdescription] = useState("");
+
   
-  const handleSubmit =(e: React.FormEvent<HTMLFormElement>) =>{
-    e.preventDefault();
-    setTodos(prev => {
-      const newTodos = [...prev];
-      newTodos.push({title, description, completed: false});
-      return newTodos;
-    });
-    setTitle("");
-    setdescription("");
-  };
+  
 
   return (
-    <div className="max-wscreen-md mx-auto p-4">
+    <div className="max-wscreen-md mx-auto p-4 space-y-4">
       <h1 className="text-xl font-bold">To-Do List</h1>
-      <ul>  
+      <ul className="space-y-2">  
       {todos.map(({title, description, completed}, index)=>(
-        <li key = {index}>
-          <input type="checkbox" 
-          checked = {completed} 
-          onChange={e => setTodos(prev =>{
-            const newTodos =[...prev];
-            newTodos[index].completed = e.target.checked
-            return newTodos;
-          })}/>
+       <ToDoItem title={title} description={description} completed = {completed} onCompleteChanged={(newValue) => {
+        setTodos(prev =>{
+          const newTodos =[...prev];
+          newTodos[index].completed = newValue;
+          return newTodos;
+        })
+       }}
 
-          <span className="font-semibold">{title}</span>
-          {description}
-          </li>
+       onRemove={() => {
+        setTodos(prev =>{
+          const newTodos = [...prev].filter((_, i) => i !== index);
+          return newTodos;
+        })
+       
+      }}
+       />
       ))}
       </ul>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="title">Title</label>
-        <input type="text" name="title" id="title" value={title} onChange={ e => setTitle(e.target.value)}/>
-        <label htmlFor="description">Description</label>
-        <input type="text" name="description" id="description" value={description} onChange={e => setdescription(e.target.value)}/>
-        <button type="submit">Create</button>
-
-      </form>
+      <NewTodoForm onCreate={(title,description) =>{
+        setTodos(prev => {
+          const newTodos = [...prev];
+          newTodos.push({title, description, completed: false});
+          return newTodos;
+        });
+      
+      }} />
     </div>
     
   );
 }
+
+function ToDoItem({title,description,completed,onCompleteChanged, onRemove}: {
+  title:string; 
+  description: string; 
+  completed: boolean; 
+  onCompleteChanged:(newValue:boolean) => void;
+  onRemove: () => void;
+  
+  }){
+  
+      return(
+        <li className="flex gap-2 border rounded p-2">
+          <input type="checkbox" 
+          checked = {completed} 
+          onChange={e => onCompleteChanged(e.target.checked) }
+          />
+          <div>
+            <p className="font-semibold">{title}</p>
+            <p className="text-sm text-gray-600">{description}</p>
+          </div>
+          <div>
+            <button type="button" className="text-red-500" onClick={() => onRemove()}>Remove</button>
+          </div>
+        </li>
+
+          
+      )
+  }
  
