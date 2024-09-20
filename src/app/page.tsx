@@ -1,7 +1,7 @@
 "use client";
 
 import { todo } from "node:test";
-import { use, useState } from "react";
+import {useState } from "react";
 import { NewTodoForm } from "./_components/new-todo-form";
 
 
@@ -17,8 +17,8 @@ export default function Home() {
     {title:"example", description : "this is an example", completed :false}
   ]);
   
-  const[title,setTitle] = useState("");
-  const[description, setdescription] = useState("");
+  // const[title,setTitle] = useState("");
+  // const[description, setdescription] = useState("");
 
   
   
